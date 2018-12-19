@@ -11,6 +11,7 @@ import android.view.View;
  **/
 public class MyClickListener implements View.OnLongClickListener {
 
+
     // called when the item is long-clicked
     @Override
     public boolean onLongClick(View view) {
@@ -28,8 +29,9 @@ public class MyClickListener implements View.OnLongClickListener {
                 view, //关于拖放操作的本地数据
                 0   //不需要标志
         );
-
         view.setVisibility(View.INVISIBLE);
+
         return true;
     }
+
 }

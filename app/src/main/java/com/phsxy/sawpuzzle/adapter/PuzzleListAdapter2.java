@@ -9,8 +9,6 @@ import android.widget.ImageView;
 
 import com.phsxy.sawpuzzle.MyClickListener;
 import com.phsxy.sawpuzzle.R;
-import com.phsxy.sawpuzzle.activity.PuzzleActivity;
-import com.phsxy.sawpuzzle.activity.PuzzleActivity2;
 import com.phsxy.sawpuzzle.bean.Pieces;
 
 import java.util.List;
@@ -44,7 +42,8 @@ public class PuzzleListAdapter2 extends RecyclerView.Adapter<PuzzleListAdapter2.
         Pieces result = piecesModelList.get(position);
         holder.imageView.setImageResource(piecesModelList.get(position).getOriginalResource());
         holder.imageView.setTag("" + piecesModelList.get(position).getpX() + "," + piecesModelList.get(position).getpY());
-
+//        Log.e("6666666tag", piecesModelList.get(position).getpX() + "," + piecesModelList.get(position).getpY()) ;
+        int note = result.getNote();
         holder.imageView.setOnLongClickListener(new MyClickListener());
     }
 

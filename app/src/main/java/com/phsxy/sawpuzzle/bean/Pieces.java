@@ -11,6 +11,18 @@ public class Pieces {
     private int pY = 0;
     private int originalResource;
     private int position = 0;
+
+    private int Note ;
+
+    public int getNote() {
+        return Note;
+    }
+
+    public void setNote(int note) {
+        Note = note;
+    }
+
+
     public int getpX() {
         return pX;
     }

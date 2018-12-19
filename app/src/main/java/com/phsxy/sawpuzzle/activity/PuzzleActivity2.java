@@ -1,43 +1,23 @@
 package com.phsxy.sawpuzzle.activity;
 
-import android.content.ClipData;
-import android.content.ClipDescription;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.DragEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.phsxy.sawpuzzle.R;
-import com.phsxy.sawpuzzle.adapter.PuzzleListAdapter;
 import com.phsxy.sawpuzzle.adapter.PuzzleListAdapter2;
 import com.phsxy.sawpuzzle.bean.Pieces;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,7 +31,7 @@ public class PuzzleActivity2 extends AppCompatActivity {
     @BindView(R.id.scrollView)
     NestedScrollView scrollView;
     @BindView(R.id.recyclerview)
-    RecyclerView mRecyclerView;
+    RecyclerView     mRecyclerView;
 
     @BindView(R.id.iv_puzzle1)
     ImageView iv_puzzle1;
@@ -76,7 +56,10 @@ public class PuzzleActivity2 extends AppCompatActivity {
     private List<Pieces> piecesList2;
     List<Integer> randomList;
 
-    private int countGrid = 0;
+    private int countGrid  = 0;
+    private int mCorrectMa = -1, mCorrectMa1 = -1, mCorrectMa2 = -1, mCorrectMa3 = -1, mCorrectMa4 = -1, mCorrectMa5 = -1, mCorrectMa6 = -1,
+            mCorrectMa7    = -1, mCorrectMa8 = -1;
+    private boolean Sd = false;
     int[] resourceImages2 = new int[]{
             R.mipmap.img_puzzle1,
             R.mipmap.img_puzzle2,
@@ -87,16 +70,6 @@ public class PuzzleActivity2 extends AppCompatActivity {
             R.mipmap.img_puzzle7,
             R.mipmap.img_puzzle8,
             R.mipmap.img_puzzle9};
-
-    int[] resourceImages = new int[]{R.mipmap.img_puzzle_bg1,
-            R.mipmap.img_puzzle_bg2,
-            R.mipmap.img_puzzle_bg3,
-            R.mipmap.img_puzzle_bg4,
-            R.mipmap.img_puzzle_bg5,
-            R.mipmap.img_puzzle_bg6,
-            R.mipmap.img_puzzle_bg7,
-            R.mipmap.img_puzzle_bg8,
-            R.mipmap.img_puzzle_bg9};
 
 
     @Override
@@ -118,31 +91,33 @@ public class PuzzleActivity2 extends AppCompatActivity {
         PuzzleListAdapter2 puzzleListAdapter = new PuzzleListAdapter2(this, piecesList);
         mRecyclerView.setAdapter(puzzleListAdapter);
         puzzleListAdapter.notifyDataSetChanged();
+
     }
 
 
     private void initData() {
-//        Arrays.sort(resourceImages2);
-//        Random random = new Random();
-//        for (int i = 0; i < resourceImages2.length; i++) {
-//            int p = random.nextInt(resourceImages2.length);
-//            if (!randomList.contains(i)) {
-//                int tmp = resourceImages2[i];
-//                resourceImages2[i] = resourceImages2[p];
-//                resourceImages2[p] = tmp;
-//            }
-//        }
-//        for (int i = 0; i < resourceImages2.length; i++) {
-//            Random random = new Random();
-//            if (!randomList.contains(i)) {
-//                randomList.add(random.nextInt(resourceImages2.length));
-//            }
-////            recursive(random.nextInt(8), i);
-//        }
+        //        Arrays.sort(resourceImages2);
+        //        Random random = new Random();
+        //        for (int i = 0; i < resourceImages2.length; i++) {
+        //            int p = random.nextInt(resourceImages2.length);
+        //            if (!randomList.contains(i)) {
+        //                int tmp = resourceImages2[i];
+        //                resourceImages2[i] = resourceImages2[p];
+        //                resourceImages2[p] = tmp;
+        //            }
+        //        }
+        //        for (int i = 0; i < resourceImages2.length; i++) {
+        //            Random random = new Random();
+        //            if (!randomList.contains(i)) {
+        //                randomList.add(random.nextInt(resourceImages2.length));
+        //            }
+        ////            recursive(random.nextInt(8), i);
+        //        }
         for (int i = 0; i < resourceImages2.length; i++) {
             Pieces piecesModel = new Pieces();
             piecesModel.setpX(i);
             piecesModel.setpY(i);
+            piecesModel.setNote(i);
             piecesModel.setPosition(countGrid);
             piecesModel.setOriginalResource(resourceImages2[countGrid]);
             piecesList.add(piecesModel);
@@ -179,7 +154,7 @@ public class PuzzleActivity2 extends AppCompatActivity {
 
     public class MyDragListener implements View.OnDragListener {
 
-        final ImageView imageView;
+        private final ImageView imageView;
 
         public MyDragListener(final ImageView imageView) {
             this.imageView = imageView;
@@ -188,148 +163,58 @@ public class PuzzleActivity2 extends AppCompatActivity {
 
         @Override
         public boolean onDrag(View views, DragEvent event) {
-
             //  处理每个预期的事件
             switch (event.getAction()) {
 
-                //开始拖放操作的信号。
+                //开始拖放操作的信号。   开始拖拽
                 case DragEvent.ACTION_DRAG_STARTED:
-                    // do nothing
-                    break;
+                    // do nothing     什么都不做
 
-                // 拖动点已经进入视图的边界框
-                case DragEvent.ACTION_DRAG_ENTERED:
+                    break;
+                // 拖动点已经进入视图的边界框     拖拽的view进入监听的view时
+                case DragEvent.ACTION_DRAG_ENTERED: //拖拽进入目标区域
                     //v.setBackgroundResource(R.drawable.target_shape);    //改变景色
                     break;
 
-                //用户已经将拖动阴影移到了视图的边界框之外
-                case DragEvent.ACTION_DRAG_EXITED:
-                    //v.setBackgroundResource(R.drawable.normal_shape);    //change the shape of the view back to normal
+                case DragEvent.ACTION_DRAG_EXITED: //拖拽到目标区域外
+                    //                    views.setBackgroundResource(R.color.colorAccent);    //将视图的形状更改为正常
                     break;
-
-                //drag shadow has been released,the drag point is within the bounding box of the View
-                //拖曳阴影已经释放，拖曳点在视图的边框内
+                //拖拽完成之后松开手指
                 case DragEvent.ACTION_DROP:
                     if (views == imageView) {
                         View view = (View) event.getLocalState();
                         String tag = views.getTag().toString();
-                        ViewGroup owner = (ViewGroup) views.getParent();
-                        ViewParent parent = views.getParent();
-                        if (tag.equals("0")) {
-                            Pieces piecesModel = piecesList.get(Integer.parseInt(views.getTag().toString()));
-                            String selectedViewTag = view.getTag().toString();
-                            String xy = piecesModel.getpX() + "," + piecesModel.getpY();
-                            if (xy.equals(selectedViewTag)) {
-                                ImageView imageView = (ImageView) views;
-                                imageView.setImageResource(piecesList.get(Integer.parseInt(views.getTag().toString())).getOriginalResource());
-                                piecesModel = null;
-                            } else {
-                                view.setVisibility(View.VISIBLE);
-                                Toast.makeText(getApplicationContext(), "不是正确的拼图", Toast.LENGTH_LONG).show();
-                            }
 
+                        //                        Log.e("66666", "tag:" + tag);
+                        if (tag.equals("0")) {
+                            DragView(view, views, tag);
                         } else if (tag.equals("1")) {
-                            Pieces piecesModel = piecesList.get(Integer.parseInt(views.getTag().toString()));
-                            String selectedViewTag = view.getTag().toString();
-                            String xy = piecesModel.getpX() + "," + piecesModel.getpY();
-                            if (xy.equals(selectedViewTag)) {
-                                ImageView imageView = (ImageView) views;
-                                imageView.setImageResource(piecesList.get(Integer.parseInt(views.getTag().toString())).getOriginalResource());
-                                piecesModel = null;
-                            } else {
-                                view.setVisibility(View.VISIBLE);
-                                Toast.makeText(getApplicationContext(), "不是正确的拼图", Toast.LENGTH_LONG).show();
-                            }
+                            DragView(view, views, tag);
 
                         } else if (tag.equals("2")) {
-                            Pieces piecesModel = piecesList.get(Integer.parseInt(views.getTag().toString()));
-                            String selectedViewTag = view.getTag().toString();
-                            String xy = piecesModel.getpX() + "," + piecesModel.getpY();
-                            if (xy.equals(selectedViewTag)) {
-                                ImageView imageView = (ImageView) views;
-                                imageView.setImageResource(piecesList.get(Integer.parseInt(views.getTag().toString())).getOriginalResource());
-                                piecesModel = null;
-                            } else {
-                                view.setVisibility(View.VISIBLE);
-                                Toast.makeText(getApplicationContext(), "不是正确的拼图", Toast.LENGTH_LONG).show();
-                            }
+
+                            DragView(view, views, tag);
+
                         } else if (tag.equals("3")) {
-                            Pieces piecesModel = piecesList.get(Integer.parseInt(views.getTag().toString()));
-                            String selectedViewTag = view.getTag().toString();
-                            String xy = piecesModel.getpX() + "," + piecesModel.getpY();
-                            if (xy.equals(selectedViewTag)) {
-                                ImageView imageView = (ImageView) views;
-                                imageView.setImageResource(piecesList.get(Integer.parseInt(views.getTag().toString())).getOriginalResource());
-                                piecesModel = null;
-                            } else {
-                                view.setVisibility(View.VISIBLE);
-                                Toast.makeText(getApplicationContext(), "不是正确的拼图", Toast.LENGTH_LONG).show();
-                            }
+
+                            DragView(view, views, tag);
+
                         } else if (tag.equals("4")) {
-                            Pieces piecesModel = piecesList.get(Integer.parseInt(views.getTag().toString()));
-                            String selectedViewTag = view.getTag().toString();
-                            String xy = piecesModel.getpX() + "," + piecesModel.getpY();
-                            if (xy.equals(selectedViewTag)) {
-                                ImageView imageView = (ImageView) views;
-                                imageView.setImageResource(piecesList.get(Integer.parseInt(views.getTag().toString())).getOriginalResource());
-                                piecesModel = null;
-                            } else {
-                                view.setVisibility(View.VISIBLE);
-                                Toast.makeText(getApplicationContext(), "不是正确的拼图", Toast.LENGTH_LONG).show();
-                            }
+                            DragView(view, views, tag);
+
                         } else if (tag.equals("5")) {
-                            Pieces piecesModel = piecesList.get(Integer.parseInt(views.getTag().toString()));
-                            String selectedViewTag = view.getTag().toString();
-                            String xy = piecesModel.getpX() + "," + piecesModel.getpY();
-                            if (xy.equals(selectedViewTag)) {
-                                ImageView imageView = (ImageView) views;
-                                imageView.setImageResource(piecesList.get(Integer.parseInt(views.getTag().toString())).getOriginalResource());
-                                piecesModel = null;
-                            } else {
-                                view.setVisibility(View.VISIBLE);
-                                Toast.makeText(getApplicationContext(), "不是正确的拼图", Toast.LENGTH_LONG).show();
-                            }
+                            DragView(view, views, tag);
                         } else if (tag.equals("6")) {
-                            Pieces piecesModel = piecesList.get(Integer.parseInt(views.getTag().toString()));
-                            String selectedViewTag = view.getTag().toString();
-                            String xy = piecesModel.getpX() + "," + piecesModel.getpY();
-                            if (xy.equals(selectedViewTag)) {
-                                ImageView imageView = (ImageView) views;
-                                imageView.setImageResource(piecesList.get(Integer.parseInt(views.getTag().toString())).getOriginalResource());
-                                piecesModel = null;
-                            } else {
-                                view.setVisibility(View.VISIBLE);
-                                Toast.makeText(getApplicationContext(), "不是正确的拼图", Toast.LENGTH_LONG).show();
-                            }
+
+                            DragView(view, views, tag);
 
                         } else if (tag.equals("7")) {
-                            Pieces piecesModel = piecesList.get(Integer.parseInt(views.getTag().toString()));
-                            String selectedViewTag = view.getTag().toString();
-                            String xy = piecesModel.getpX() + "," + piecesModel.getpY();
-                            if (xy.equals(selectedViewTag)) {
-                                ImageView imageView = (ImageView) views;
-                                imageView.setImageResource(piecesList.get(Integer.parseInt(views.getTag().toString())).getOriginalResource());
-                                piecesModel = null;
-                            } else {
-                                view.setVisibility(View.VISIBLE);
-                                Toast.makeText(getApplicationContext(), "不是正确的拼图", Toast.LENGTH_LONG).show();
-                            }
+                            DragView(view, views, tag);
+
                         } else if (tag.equals("8")) {
-                            Pieces piecesModel = piecesList.get(Integer.parseInt(views.getTag().toString()));
-                            String selectedViewTag = view.getTag().toString();
-                            String xy = piecesModel.getpX() + "," + piecesModel.getpY();
-                            if (xy.equals(selectedViewTag)) {
-                                ImageView imageView = (ImageView) views;
-                                imageView.setImageResource(piecesList.get(Integer.parseInt(views.getTag().toString())).getOriginalResource());
-                                piecesModel = null;
-                            } else {
-                                view.setVisibility(View.VISIBLE);
-                                Toast.makeText(getApplicationContext(), "不是正确的拼图", Toast.LENGTH_LONG).show();
-                            }
-                        } else {
-                            view.setVisibility(View.VISIBLE);
-                            Toast.makeText(getApplicationContext(), "你不能把图像放在这里", Toast.LENGTH_LONG).show();
+                            DragView(view, views, tag);
                         }
+
                     } else {
                         View view = (View) event.getLocalState();
                         view.setVisibility(View.VISIBLE);
@@ -337,15 +222,131 @@ public class PuzzleActivity2 extends AppCompatActivity {
                     }
                     break;
 
-                //拖放操作已经结束
+                case DragEvent.ACTION_DRAG_LOCATION:
+
+                    break;
+
+                //拖放操作已经结束   结束拖拽
                 case DragEvent.ACTION_DRAG_ENDED:
-                    //v.setBackgroundResource(R.drawable.normal_shape);	//回到正常状态
+
+                    View view = (View) event.getLocalState();
+                    DragView2(view);
+                    break;
                 default:
                     break;
             }
 
             return true;
         }
+    }
+
+
+
+    private void DragView(View view, View views, String tag) {
+        String selectedViewTag = view.getTag().toString();
+        Pieces piecesModel = piecesList.get(Integer.parseInt(views.getTag().toString()));
+        String xy = piecesModel.getpX() + "," + piecesModel.getpY();
+
+        if (xy.equals(selectedViewTag)) {
+            ImageView imageView = (ImageView) views;
+            imageView.setImageResource(piecesList.get(Integer.parseInt(views.getTag().toString())).getOriginalResource());
+            view.setVisibility(View.INVISIBLE);
+            Toast.makeText(getApplicationContext(), "正确的拼图", Toast.LENGTH_LONG).show();
+            if (tag.equals("0")) {
+                initNum();
+                mCorrectMa = 0;
+            } else if (tag.equals("1")) {
+                initNum();
+                mCorrectMa1 = 1;
+
+            } else if (tag.equals("2")) {
+                initNum();
+                mCorrectMa2 = 2;
+
+            } else if (tag.equals("3")) {
+                initNum();
+                mCorrectMa3 = 3;
+
+            } else if (tag.equals("4")) {
+                initNum();
+                mCorrectMa4 = 4;
+
+            } else if (tag.equals("5")) {
+                initNum();
+                mCorrectMa5 = 5;
+            } else if (tag.equals("6")) {
+                initNum();
+                mCorrectMa6 = 6;
+
+            } else if (tag.equals("7")) {
+                initNum();
+                mCorrectMa7 = 7;
+
+            } else if (tag.equals("8")) {
+                initNum();
+                mCorrectMa8 = 8;
+            }
+        } else {
+            view.setVisibility(View.VISIBLE);
+            Toast.makeText(getApplicationContext(), "不是正确的拼图", Toast.LENGTH_LONG).show();
+            initNum();
+        }
+
+
+    }
+
+
+    private void initNum() {
+        mCorrectMa = -1;
+        mCorrectMa1 = -1;
+        mCorrectMa2 = -1;
+        mCorrectMa3 = -1;
+        mCorrectMa4 = -1;
+        mCorrectMa5 = -1;
+        mCorrectMa6 = -1;
+        mCorrectMa7 = -1;
+        mCorrectMa8 = -1;
+    }
+    private void DragView2(View view) {
+        String tag = view.getTag().toString();
+
+        if (tag.contentEquals("0,0") && mCorrectMa == 0) {
+            view.setVisibility(View.INVISIBLE);
+            //                    initNum();
+
+        } else if (tag.contentEquals("1,1")&& mCorrectMa1 == 1) {
+            view.setVisibility(View.INVISIBLE);
+            //                    initNum();
+
+        } else if (tag.contentEquals("2,2")&& mCorrectMa2 == 2) {
+            view.setVisibility(View.INVISIBLE);
+            //                    initNum();
+
+        } else if (tag.contentEquals("3,3")&& mCorrectMa3 == 3) {
+            view.setVisibility(View.INVISIBLE);
+            //                    initNum();
+        } else if (tag.contentEquals("4,4")&& mCorrectMa4 == 4) {
+            view.setVisibility(View.INVISIBLE);
+            //                    initNum();
+
+        } else if (tag.contentEquals("5,5")&& mCorrectMa5 == 5) {
+            view.setVisibility(View.INVISIBLE);
+            //            initNum();
+        } else if (tag.contentEquals("6,6")&& mCorrectMa6 == 6) {
+            view.setVisibility(View.INVISIBLE);
+            //            initNum();
+        } else if (tag.contentEquals("7,7")&& mCorrectMa7 == 7) {
+            view.setVisibility(View.INVISIBLE);
+            //            initNum();
+        } else if (tag.contentEquals("8,8")&& mCorrectMa8 == 8) {
+            view.setVisibility(View.INVISIBLE);
+            //            initNum();
+        } else {
+            Log.e("66666", "走了:");
+            view.setVisibility(View.VISIBLE);
+            //            initNum();
+        }
+
     }
 
 }
